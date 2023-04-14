@@ -3,6 +3,10 @@ import dotenv from "dotenv";
 import { loginRouter } from "./routes/login.routes.js";
 import passport from "passport";
 import "./middlewares/google.js"
+import ejs from "ejs";
+import path from "path";
+import * as url from 'url';
+import routeHome from "./routes/backofficeroutes.js";
 
 dotenv.config();
 
@@ -20,10 +24,18 @@ app.use("/auth",passport.authenticate("auth-google",{
     session:false
 }),loginRouter);
 
-app.set("port", process.env.PORT || 9999);
 
-app.get("/", (req, res)=>{
-    res.send("HOLA BIENVENIDO");
-});
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+
+app.set("port", process.env.PORT || 9999);
+app.set("views", path.join(__dirname, "views"));
+//ASIGNANDO PLANTILLA EJS
+app.set("view engine", "ejs");
+
+// app.get("/", (req, res)=>{
+//     res.send("HOLA BIENVENIDO");
+// });
+app.use("/", routeHome);
 
 export default app;
