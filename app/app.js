@@ -44,6 +44,6 @@ app.set("view engine", "ejs");
 // });
 app.use("/", routeHome);
 app.use("/", route);
-app.use("/dashboard", dash);
+app.use("/v1", dash);
 
 export default app;

@@ -7,12 +7,12 @@ const loginRouter = Router();
 
 loginRouter.get("/google", (req, res)=> {
     const id = req.user.id;
-    const name = req.user.displayName;
+    const nombre = req.user.displayName;
     const email = req.user.emails[0].value;
     const foto = req.user.photos[0].value;
 
     const payload = {
-        nombre:name,
+        nombre:nombre,
         correo:email,
         foto:foto
     }
@@ -26,7 +26,7 @@ loginRouter.get("/google", (req, res)=> {
 
 res.cookie("ckeaj", token);
 
-    res.redirect("/dashboard/inicio")
+    res.redirect("/v1/inicio")
     // res.render("backoffice",{nombre:name});
 });
 
