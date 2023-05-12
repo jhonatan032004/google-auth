@@ -115,10 +115,11 @@ dash.post("/guardar", (req,res)=>{
         }
         let ruta = "http://localhost:3000/api/user";
         let metodo = "post";
+
         let option = {
             method: metodo,
-            Headers:{
-                "Content-Type":"aplication/json"
+            headers:{
+                "Content-Type":"application/json"
             },
             body : JSON.stringify(data)
         };
@@ -128,7 +129,8 @@ dash.post("/guardar", (req,res)=>{
             .then(data=>{
                 console.log("Datos guardados");
             })
-            .catch(err=>console.log("error al consumir"))
+            .catch(err=>console.log("error al consumir " + err))
+            res.redirect("/v1/usuario")
         } catch (error) {
             
         }
