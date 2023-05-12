@@ -10,7 +10,8 @@ import routeHome from "./routes/backoffice.routes.js";
 import route from "./routes/home.routes.js";
 import dash from "./routes/dashboard.routes.js";
 import cookieParser from "cookie-parser";
-
+import bodyParser from "body-parser";
+4
 dotenv.config();
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use(passport.initialize());
 app.use(express.static(__dirname + '../public'));
 app.use(cookieParser());
+app.use(bodyParser.urlencoded({extended: false}));
 
 // Routes
 app.use("/auth",passport.authenticate("auth-google",{

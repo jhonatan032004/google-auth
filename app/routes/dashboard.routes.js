@@ -1,6 +1,7 @@
-import { Router } from "express";
+import { Router, response } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import fetch from "node-fetch";
 dotenv.config();
 
 const dash = Router();
@@ -29,18 +30,32 @@ dash.get("/inicio", (req,res)=>{
     
 });
 
-dash.get("/usuario", (req,res)=>{
+dash.get("/usuario", async (req,res)=>{
     if (req.cookies.ckeaj){
         try {
             const token = jwt.verify(
                 req.cookies.ckeaj, 
                 process.env.SECRET_KEY);
-                
+
+                let ruta = "http://localhost:3000/api/user";
+                let option = {
+                    method:"GET"
+                }
+                let datos = {};
+                const result = await fetch(ruta,option)
+                .then(response => response.json())
+                .then(data => {
+                    datos = data[0];
+                    console.log(datos);
+                })
+                .catch(err => console.log("Error en peticion" + err))
+
                 res.render("dash", {
                     "nombre":token.nombre,
                     "foto":token.foto,
-                    "menu":1
-                });
+                    "menu":1,
+                    "datos":datos
+                       });
 
         } catch (error) {
             res.redirect("/")
@@ -93,10 +108,37 @@ dash.get("/categorias", (req,res)=>{
     
 });
 
-
+dash.post("/guardar", (req,res)=>{
+    if(req.body.name){
+        
+        let ruta = "http://localhost:3000/api/user";
+        let metodo = "post";
+        let option = {
+            method: metodo,
+            Headers:{
+                "Content-Type":"aplication/json"
+            },
+            data:{
+                name:req.body.name
+            }
+        };
+        try {
+            const result = fetch(ruta, option)
+            .then(res=>res.json())
+            .then(data=>{
+                console.log("Datos guardados");
+            })
+            .catch(err=>console.log("error al consumir"))
+        } catch (error) {
+            
+        }
+    }else{
+        res.send("error")
+    }
+});
 
 dash.get("/salir", (req,res)=>{
     res.clearCookie("ckeaj");
     res.redirect("/")
-})
+});
 export default dash;
