@@ -110,7 +110,9 @@ dash.get("/categorias", (req,res)=>{
 
 dash.post("/guardar", (req,res)=>{
     if(req.body.name){
-        
+        let data = {
+            name:req.body.name
+        }
         let ruta = "http://localhost:3000/api/user";
         let metodo = "post";
         let option = {
@@ -118,9 +120,7 @@ dash.post("/guardar", (req,res)=>{
             Headers:{
                 "Content-Type":"aplication/json"
             },
-            data:{
-                name:req.body.name
-            }
+            body : JSON.stringify(data)
         };
         try {
             const result = fetch(ruta, option)
