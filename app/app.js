@@ -1,51 +1,57 @@
-import  express  from "express";
+import express from "express";
 import dotenv from "dotenv";
-import { loginRouter } from "./routes/login.routes.js";
-import passport from "passport";
-import "./middlewares/google.js"
+import  LoginRoute  from "./routes/login.routes.js";
+import  passport from "passport";
+import "./middleware/google.js";
 import ejs from "ejs";
 import path from "path";
 import * as url from 'url';
-import routeHome from "./routes/backoffice.routes.js";
-import route from "./routes/home.routes.js";
+import Routes from "./routes/backoffice.routes.js";
+import Route from "./routes/home.routes.js";
 import dash from "./routes/dashboard.routes.js";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
-4
+
+const app = express();
+
+//SETTINGS
 dotenv.config();
+
+//MIDDLEWARES
+app.use(express.json());
+app.use(passport.initialize());
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: false }))
+
+app.use("/auth",passport.authenticate('auth-google',{
+    scope:["https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile"],
+    session:false
+
+}),LoginRoute);
+
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
+app.set("port", process.env.PORT || 6999);
 
-const app = express();
-// Middlewares
-app.use(express.json());
-app.use(passport.initialize());
-app.use(express.static(__dirname + '../public'));
-app.use(cookieParser());
-app.use(bodyParser.urlencoded({extended: false}));
-
-// Routes
-app.use("/auth",passport.authenticate("auth-google",{
-    scope:[
-        "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile"
-    ],
-    session:false
-}),loginRouter);
-
-
-
-app.set("port", process.env.PORT || 9999);
-app.set("views", path.join(__dirname, "views"));
-//ASIGNANDO PLANTILLA EJS
+//Plantilla ejs
 app.set("view engine", "ejs");
 
-// app.get("/", (req, res)=>{
-//     res.send("HOLA BIENVENIDO");
-// });
-app.use("/", routeHome);
-app.use("/", route);
-app.use("/v1", dash);
+//direccion de view para ejs 
+app.set("views", path.join(__dirname, "views"));
+
+app.use('/', Routes);
+app.use('/',Route);
+app.use('/service',Route);
+app.use('/v1',dash);
+
+app.use(express.static(__dirname + '../public'));
+
+/* app.get("/",(req,res)=>{
+    res.send("Hi Welcome")
+}); */
+
+
 
 export default app;
